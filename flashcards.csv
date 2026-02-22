@@ -1,0 +1,57 @@
+Question,Answer
+"In a production environment, what is the primary goal of AI system design beyond model accuracy?",Ensuring intelligence reaches the user reliably at scale in real time.
+What are the two fundamentally different architecture patterns used to design AI systems?,Pipeline-based and Agentic-based AI systems.
+How is the flow of a traditional AI system without agents described?,Predefined and linear.
+"In a traditional AI pipeline, where does the orchestration logic typically reside?",In the back-end code rather than the intelligence layer.
+"Unlike static pipelines, agentic systems operate in _____.",loops.
+What four capabilities define the model's role in an agentic system?,"Reasoning, planning, using tools, and remembering context."
+Definition: Artificial Intelligence (AI),"The replication of human intelligence in machines to encompass learning, problem-solving, and perception."
+The subset of AI that enables machines to learn from data independently is _____.,Machine Learning (ML).
+What is the function of Deep Learning within the AI hierarchy?,It uses multilayered neural networks to understand complex data and make decisions.
+Which core objective of AI system design focuses on reducing hallucinations and unsafe outputs?,Accuracy.
+Which AI system design objective involves handling growing datasets and increasing request volumes?,Scalability.
+"In AI systems, the term _____ refers to the need for predictions to be fast enough for real-time use.",latency.
+Which core objective allows a model to learn from new data through feedback loops?,Adaptability.
+The objective of _____ involves tracking metrics like data drift and model bias for system auditing.,observability.
+What are the four typical layers of an AI system architecture?,"Data layer, Model layer, Serving layer, and Monitoring layer."
+"Which architectural layer handles data collection, storage, and preprocessing into usable features?",Data layer.
+What is the primary responsibility of the Model Layer?,"Training, validating, and updating models while managing feature engineering."
+The _____ layer hosts models as real-time APIs to deliver predictions to users.,serving
+"In the data flow of an AI system, what follows data ingestion and cleaning?",Processing to extract features.
+What is the purpose of a 'Feature Store' in an AI system?,To ensure consistent feature availability for both offline training and live online predictions.
+Which component tracks every model version along with its metadata to allow for rollbacks?,Model Registry.
+What do feedback loops provide to the overall AI system?,New data for retraining to improve the model over time.
+How does an AI agent differ from a standard chatbot?,"It can understand, decide, and take action to complete tasks without step-by-step human instruction."
+What were the five stages in the evolution of AI systems leading to agents?,"1. LLM, 2. Prompting, 3. RAG, 4. Tool Use, 5. Agents (Retrieval + Actions)."
+What breakthrough did RAG (Retrieval-Augmented Generation) provide for LLMs?,"The ability to retrieve and use private or internal documents (PDFs, websites) to answer accurately."
+Why is running agentic systems in production challenging for engineers?,"LLMs do not behave deterministically, making quality consistency difficult at scale."
+What is ADK in the context of agent development?,"Agent Development Kit, a framework for designing and deploying multi-agent solutions."
+What does it mean for the ADK to be 'model-agnostic'?,"It can work with various models (Gemini, OpenAI, custom models) without redesigning the agent system."
+What does 'deployment-agnostic' mean in agentic systems?,"The system can be run on local machines, cloud platforms, or on-premises infrastructure."
+"In the multi-agent system example, what is the specific role of the 'Researcher Agent'?",To find comprehensive and accurate information using search tools.
+What is the role of the 'Judge Agent' in a multi-agent workflow?,To review the work of other agents and provide a pass or fail assessment based on specific criteria.
+Which agent manages the workflow and communication between specialists in a multi-agent system?,Orchestration Agent.
+What is the function of an 'Escalation Checker' in an agentic loop?,To stop the loop once the task is successfully completed or if it fails a threshold.
+Agents are a design _____ rather than a specific model architecture.,paradigm
+"In the 'brain and nervous system' analogy, what part does fine-tuning represent?",Changing the 'brain' itself to learn specific facts or tones.
+"In the 'brain and nervous system' analogy, what part does agency represent?","The nervous system and tools (APIs, memory, reasoning loops) given to the brain."
+What was the initial focus of RAG when it first evolved?,Improving relevance and accuracy of LLM outputs.
+How did RAG evolve to support enterprise security?,By allowing the use of proprietary data without feeding it into public model training sets.
+"In modern agentic systems, RAG is often treated as a specialized _____.",node (or tool).
+Why is estimating costs by 'price tag' difficult in agentic systems?,"Because agents operate in loops, making the number of calls unpredictable."
+What is the formula for estimating the total cost of an agentic system?,$\text{Total Cost} = \sum (\text{Avg. Calls per Agent} \times \text{Avg. Tokens per Call} \times \text{Model Token Price})$
+What are the two factors that define the 'economy' of an agentic graph?,Frequency of calls and the token price of the model assigned to each node.
+Process: Creating a multi-agent course creator,"Researcher finds data, Judge verifies facts, Content Builder structures the course, Orchestrator manages the flow."
+What is the 'Reasoning Loop' in an AI agent?,The ability of the system to plan a task and self-correct during execution.
+Which tool is commonly used to process large volumes of data in the preprocessing stage of an AI pipeline?,Apache Spark (or Kafka/Airflow).
+What technology is typically used to manage the offline and online consistency of ML data features?,"Feature Store (e.g., Feast)."
+Which hardware units are primary for high-scale model training in the Model Layer?,GPUs (Graphic Processing Units) and TPUs (Tensor Processing Units).
+What does a 'Monitoring' tool like Prometheus or Grafana track in an AI system?,Observability metrics such as model performance and data drift.
+"In the evolution of RAG, what succeeded the focus on relevance?",Addressing hallucinations by providing a 'source of truth' and verifiable references.
+Most modern agents use off-the-shelf models and focus innovation on _____.,system architecture.
+What does an agent require as 'hands' to interact with the world?,APIs and external tools.
+What does an agent require as 'memory' in an architectural framework?,State management and databases.
+"In traditional AI systems, how are new capabilities typically added?",By writing more back-end glue code and deploying new microservices.
+Which phase of the AI evolution introduced the ability for the model to take actions?,Stage 5: LLM + Retrieval + Actions.
+What is 'Data Drift' in the context of AI monitoring?,Changes in the input data over time that can lead to a decrease in model accuracy.
+Why is the Serving Layer critical for agentic systems?,"It handles the deployment, scaling, and routing of requests, including calls to external tools."
