@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GDG Surrey | AI System Design Flashcards</title>
+    <title>GDG Surrey | AI Interactive</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J60DPDDWYC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J60DPDDWYC');
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
@@ -31,6 +40,32 @@
         .orb-3 { width: 300px; height: 300px; background: var(--red); top: 30%; right: 15%; opacity: 0.2; }
 
         #app-container { width: 100%; max-width: 500px; padding: 25px; z-index: 10; box-sizing: border-box; }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: #777;
+        }
+        .tab.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
 
         .header h1 {
             font-size: 1.6rem; margin: 0; font-weight: 700;
@@ -83,8 +118,11 @@
         }
         .btn-prev { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; }
         .btn-next { background: white; color: black; border: none; }
-        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
         button:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        /* Day 2 View */
+        #day2-view { display: none; text-align: center; padding: 60px 20px; }
 
         /* End Screen */
         #congrats { display: none; text-align: center; }
@@ -111,41 +149,54 @@
     </div>
 
     <div id="app-container">
-        <div id="game-view">
-            <div class="header">
-                <h1>GDG Surrey Day 1</h1>
-                <div class="progress-container">
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:8px; color:#777; font-weight:500;">
-                        <span id="category-label">INTERACTIVE SESSION</span>
-                        <span><span id="current-num">0</span> / <span id="total-num">0</span></span>
+        <div class="tabs">
+            <div id="tab1" class="tab active" onclick="switchTab(1)">Day 1</div>
+            <div id="tab2" class="tab" onclick="switchTab(2)">Day 2</div>
+        </div>
+
+        <div id="day1-view">
+            <div id="game-view">
+                <div class="header">
+                    <h1>AI System Design</h1>
+                    <div class="progress-container">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:8px; color:#777; font-weight:500;">
+                            <span>AGENTIC ARCHITECTURE</span>
+                            <span><span id="current-num">0</span> / <span id="total-num">0</span></span>
+                        </div>
+                        <div class="progress-bar"><div id="progress-fill"></div></div>
                     </div>
-                    <div class="progress-bar"><div id="progress-fill"></div></div>
                 </div>
-            </div>
-            
-            <div class="card-container" onclick="flipCard()">
-                <div class="card" id="card-inner">
-                    <div class="card-face">
-                        <div class="label q-label">Question</div>
-                        <div class="text-content" id="front-text">Loading...</div>
+                
+                <div class="card-container" onclick="flipCard()">
+                    <div class="card" id="card-inner">
+                        <div class="card-face">
+                            <div class="label q-label">Question</div>
+                            <div class="text-content" id="front-text">Loading session data...</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="label a-label">Answer</div>
+                            <div class="text-content" id="back-text"></div>
+                        </div>
                     </div>
-                    <div class="card-face card-back">
-                        <div class="label a-label">Answer</div>
-                        <div class="text-content" id="back-text"></div>
-                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn-prev" id="prev-btn" onclick="prevCard()" disabled>Back</button>
+                    <button class="btn-next" id="next-btn" onclick="nextCard()">Next</button>
                 </div>
             </div>
 
-            <div class="controls">
-                <button class="btn-prev" id="prev-btn" onclick="prevCard()" disabled>Back</button>
-                <button class="btn-next" id="next-btn" onclick="nextCard()">Next</button>
+            <div id="congrats">
+                <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Day 1 Complete!</h1>
+                <p style="color: #aaa; margin-bottom: 30px;">You've mastered the concepts. Stay tuned for Day 2 updates.</p>
+                <a href="https://gdg.community.dev/gdg-surrey/" class="finish-btn" target="_blank">View GDG Surrey Events</a>
             </div>
         </div>
 
-        <div id="congrats">
-            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Day 1 Complete!</h1>
-            <p style="color: #aaa; margin-bottom: 30px;">Great job! You've finished all the interactive flashcards for this session.</p>
-            <a href="https://gdg.community.dev/gdg-surrey/" class="finish-btn" target="_blank">Follow More Events</a>
+        <div id="day2-view">
+            <h2 style="font-size: 2rem; color: var(--yellow);">Coming Soon</h2>
+            <p style="color: #888;">Day 2 flashcards will be unlocked after the next session. See you there!</p>
+            <div style="width: 80px; height: 80px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 20px; margin: 40px auto; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.1); font-size:2rem;">2</div>
         </div>
 
         <div class="disclaimer">
@@ -158,8 +209,19 @@
     let flashcards = [];
     let currentIndex = 0;
 
+    function switchTab(day) {
+        document.getElementById('tab1').classList.toggle('active', day === 1);
+        document.getElementById('tab2').classList.toggle('active', day === 2);
+        document.getElementById('day1-view').style.display = (day === 1) ? 'block' : 'none';
+        document.getElementById('day2-view').style.display = (day === 2) ? 'block' : 'none';
+        
+        // Track tab switches in GA
+        if (typeof gtag === 'function') {
+            gtag('event', 'tab_view', { 'day_selected': day });
+        }
+    }
+
     function initApp() {
-        // Fetching "flashcards.csv" from the same directory
         Papa.parse("flashcards.csv", {
             download: true,
             header: true,
@@ -168,6 +230,7 @@
                 flashcards = results.data
                     .filter(row => row.Question && row.Answer)
                     .map(row => ({
+                        // Strip tags and clean whitespace
                         q: row.Question.replace(/\\s*/gi, "").trim(),
                         a: row.Answer.trim()
                     }));
@@ -178,7 +241,7 @@
                 }
             },
             error: function() {
-                document.getElementById('front-text').innerText = "Error loading flashcards.csv. Ensure it is in the same folder.";
+                document.getElementById('front-text').innerText = "Error: flashcards.csv not found in this folder.";
             }
         });
     }
@@ -204,6 +267,10 @@
             currentIndex++;
             updateCard();
         } else {
+            // Track completion in GA
+            if (typeof gtag === 'function') {
+                gtag('event', 'day1_complete', { 'event_label': 'Flashcards Finished' });
+            }
             document.getElementById('game-view').style.display = 'none';
             document.getElementById('congrats').style.display = 'block';
         }
