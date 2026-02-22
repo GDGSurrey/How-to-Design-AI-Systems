@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDG Surrey - Interactive Flashcards</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root {
+            --gdg-blue: #4285F4; --gdg-red: #EA4335; --gdg-yellow: #FBBC04; --gdg-green: #34A853;
+            --text-main: #3c4043;
+        }
+        body {
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; margin: 0; background-color: #f8f9fa; color: var(--text-main);
+        }
+        #app-container { width: 95%; max-width: 600px; text-align: center; padding: 20px; }
+        .card-container { perspective: 1000px; height: 350px; cursor: pointer; margin: 20px 0; }
+        .card {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-radius: 16px;
+        }
+        .card.is-flipped { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center; padding: 40px;
+            box-sizing: border-box; border-radius: 16px; font-size: 1.25rem; line-height: 1.5;
+            background: white; border: 1px solid #dadce0;
+        }
+        .card-front { color: var(--text-main); border-top: 8px solid var(--gdg-blue); }
+        .card-back { transform: rotateY(180deg); background-color: #f1f3f4; color: var(--gdg-green); font-weight: 500; border-top: 8px solid var(--gdg-green); }
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
+        button {
+            padding: 12px 30px; border: none; border-radius: 24px; background: var(--gdg-blue);
+            color: white; font-size: 1rem; font-weight: bold; cursor: pointer;
+        }
+        button:disabled { background: #dadce0; cursor: not-allowed; }
+        .progress-bar { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+        #progress-fill { height: 100%; background: var(--gdg-yellow); width: 0%; transition: width 0.3s; }
+        .stats { font-size: 0.85rem; color: #5f6368; margin-bottom: 20px; }
+        #congrats { display: none; padding: 40px 20px; }
+        .link-btn {
+            display: inline-block; margin-top: 20px; padding: 15px 30px;
+            background: var(--gdg-red); color: white; text-decoration: none; border-radius: 30px; font-weight: bold;
+        }
+        #loading { font-style: italic; color: var(--gdg-blue); }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="loading">Loading Flashcards from CSV...</div>
+    
+    <div id="game-view" style="display:none;">
+        <div class="stats">Question <span id="current-num">1</span> of <span id="total-num">0</span></div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        
+        <div class="card-container" onclick="flipCard()">
+            <div class="card" id="card-inner">
+                <div class="card-face card-front" id="front-text"></div>
+                <div class="card-face card-back" id="back-text"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="prev-btn" onclick="prevCard()" disabled>Back</button>
+            <button id="next-btn" onclick="nextCard()">Next</button>
+        </div>
+    </div>
+
+    <div id="congrats">
+        <h1 style="color: var(--gdg-blue);">🎉 Congratulations!</h1>
+        <p>You've finished the session interactive from <strong>GDG Surrey</strong>.</p>
+        <p>Stay connected for more events, workshops, and tech talks:</p>
+        <a href="https://gdg.community.dev/gdg-surrey/" class="link-btn" target="_blank">Follow GDG Surrey</a>
+        <br><br>
+        <button style="background:none; color: #5f6368; text-decoration: underline;" onclick="resetGame()">Restart</button>
+    </div>
+</div>
+
+<script>
+    let flashcards = [];
+    let currentIndex = 0;
+
+    // 1. Fetch and Parse CSV
+    function initApp() {
+        Papa.parse("flashcards.csv", {
+            download: true,
+            header: true,
+            complete: function(results) {
+                // Filter out empty rows and clean the "Question" text
+                flashcards = results.data
+                    .filter(row => row.Question && row.Answer)
+                    .map(row => ({
+                        // Remove "" tags for a cleaner UI
+                        q: row.Question.replace(/\\s*/gi, "").trim(),
+                        a: row.Answer.trim()
+                    }));
+
+                if (flashcards.length > 0) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('game-view').style.display = 'block';
+                    document.getElementById('total-num').innerText = flashcards.length;
+                    updateCard();
+                } else {
+                    document.getElementById('loading').innerText = "Error: No data found in flashcards.csv";
+                }
+            },
+            error: function(err) {
+                document.getElementById('loading').innerText = "Error loading flashcards.csv. Ensure the file is in the same folder.";
+            }
+        });
+    }
+
+    function updateCard() {
+        const cardInner = document.getElementById('card-inner');
+        cardInner.classList.remove('is-flipped');
+        
+        setTimeout(() => {
+            document.getElementById('front-text').innerText = flashcards[currentIndex].q;
+            document.getElementById('back-text').innerText = flashcards[currentIndex].a;
+            document.getElementById('current-num').innerText = currentIndex + 1;
+            
+            const progress = ((currentIndex + 1) / flashcards.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + "%";
+            
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+            document.getElementById('next-btn').innerText = currentIndex === flashcards.length - 1 ? "Finish" : "Next";
+        }, 150);
+    }
+
+    function flipCard() { document.getElementById('card-inner').classList.toggle('is-flipped'); }
+
+    function nextCard() {
+        if (currentIndex < flashcards.length - 1) {
+            currentIndex++;
+            updateCard();
+        } else {
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('congrats').style.display = 'block';
+        }
+    }
+
+    function prevCard() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCard();
+        }
+    }
+
+    function resetGame() {
+        currentIndex = 0;
+        document.getElementById('game-view').style.display = 'block';
+        document.getElementById('congrats').style.display = 'none';
+        updateCard();
+    }
+
+    window.onload = initApp;
+</script>
+</body>
+</html>
