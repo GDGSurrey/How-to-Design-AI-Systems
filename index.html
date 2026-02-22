@@ -3,80 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GDG Surrey - Interactive Flashcards</title>
+    <title>GDG Surrey | Day 1 Flashcards</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+
         :root {
-            --gdg-blue: #4285F4; --gdg-red: #EA4335; --gdg-yellow: #FBBC04; --gdg-green: #34A853;
-            --text-main: #3c4043;
+            --gdg-blue: #4285F4;
+            --gdg-red: #EA4335;
+            --gdg-yellow: #FBBC04;
+            --gdg-green: #34A853;
+            --grad: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
         }
+
         body {
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh; margin: 0; background-color: #f8f9fa; color: var(--text-main);
+            font-family: 'Google Sans', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000; /* Dark background to make gradients pop */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(66, 133, 244, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(52, 168, 83, 0.15) 0%, transparent 40%);
+            color: white;
+            overflow: hidden;
         }
-        #app-container { width: 95%; max-width: 600px; text-align: center; padding: 20px; }
-        .card-container { perspective: 1000px; height: 350px; cursor: pointer; margin: 20px 0; }
+
+        #app-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* Top Progress UI */
+        .header {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #9aa0a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #9aa0a6;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--grad);
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        /* Flashcard Styling */
+        .card-container {
+            perspective: 1000px;
+            height: 400px;
+            margin-bottom: 40px;
+        }
+
         .card {
-            position: relative; width: 100%; height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-radius: 16px;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            cursor: pointer;
         }
-        .card.is-flipped { transform: rotateY(180deg); }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
         .card-face {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            display: flex; align-items: center; justify-content: center; padding: 40px;
-            box-sizing: border-box; border-radius: 16px; font-size: 1.25rem; line-height: 1.5;
-            background: white; border: 1px solid #dadce0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .card-front { color: var(--text-main); border-top: 8px solid var(--gdg-blue); }
-        .card-back { transform: rotateY(180deg); background-color: #f1f3f4; color: var(--gdg-green); font-weight: 500; border-top: 8px solid var(--gdg-green); }
-        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
+
+        .card-front::before {
+            content: "QUESTION";
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--gdg-blue);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .card-back::before {
+            content: "ANSWER";
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--gdg-green);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .text-content {
+            font-size: 1.4rem;
+            line-height: 1.4;
+            font-weight: 400;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         button {
-            padding: 12px 30px; border: none; border-radius: 24px; background: var(--gdg-blue);
-            color: white; font-size: 1rem; font-weight: bold; cursor: pointer;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        button:disabled { background: #dadce0; cursor: not-allowed; }
-        .progress-bar { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
-        #progress-fill { height: 100%; background: var(--gdg-yellow); width: 0%; transition: width 0.3s; }
-        .stats { font-size: 0.85rem; color: #5f6368; margin-bottom: 20px; }
-        #congrats { display: none; padding: 40px 20px; }
+
+        button:hover:not(:disabled) {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        button#next-btn {
+            background: var(--grad);
+            border: none;
+            box-shadow: 0 10px 20px rgba(66, 133, 244, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Congratulations Screen */
+        #congrats {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
         .link-btn {
-            display: inline-block; margin-top: 20px; padding: 15px 30px;
-            background: var(--gdg-red); color: white; text-decoration: none; border-radius: 30px; font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            padding: 18px 40px;
+            background: var(--grad);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 15px 30px rgba(52, 168, 83, 0.3);
         }
-        #loading { font-style: italic; color: var(--gdg-blue); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <div id="loading">Loading Flashcards from CSV...</div>
-    
+    <div id="loading">Initialising GDG AI Flashcards...</div>
+
     <div id="game-view" style="display:none;">
-        <div class="stats">Question <span id="current-num">1</span> of <span id="total-num">0</span></div>
-        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <div class="header">
+            <h1>Day 1 Interactive</h1>
+            <div class="progress-container">
+                <span id="current-num">0</span> / <span id="total-num">0</span>
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+        </div>
         
         <div class="card-container" onclick="flipCard()">
             <div class="card" id="card-inner">
-                <div class="card-face card-front" id="front-text"></div>
-                <div class="card-face card-back" id="back-text"></div>
+                <div class="card-face card-front">
+                    <div class="text-content" id="front-text"></div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="text-content" id="back-text"></div>
+                </div>
             </div>
         </div>
 
         <div class="controls">
-            <button id="prev-btn" onclick="prevCard()" disabled>Back</button>
+            <button id="prev-btn" onclick="prevCard()" disabled>Previous</button>
             <button id="next-btn" onclick="nextCard()">Next</button>
         </div>
     </div>
 
     <div id="congrats">
-        <h1 style="color: var(--gdg-blue);">🎉 Congratulations!</h1>
-        <p>You've finished the session interactive from <strong>GDG Surrey</strong>.</p>
-        <p>Stay connected for more events, workshops, and tech talks:</p>
-        <a href="https://gdg.community.dev/gdg-surrey/" class="link-btn" target="_blank">Follow GDG Surrey</a>
-        <br><br>
-        <button style="background:none; color: #5f6368; text-decoration: underline;" onclick="resetGame()">Restart</button>
+        <h1 style="background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem;">Well Done!</h1>
+        <p style="color: #9aa0a6; line-height: 1.6;">You've mastered the concepts for GDG Surrey Day 1. Ready to see what's next?</p>
+        <a href="https://gdg.community.dev/gdg-surrey/" class="link-btn" target="_blank">View More Events</a>
     </div>
 </div>
 
@@ -84,17 +245,14 @@
     let flashcards = [];
     let currentIndex = 0;
 
-    // 1. Fetch and Parse CSV
     function initApp() {
         Papa.parse("flashcards.csv", {
             download: true,
             header: true,
             complete: function(results) {
-                // Filter out empty rows and clean the "Question" text
                 flashcards = results.data
                     .filter(row => row.Question && row.Answer)
                     .map(row => ({
-                        // Remove "" tags for a cleaner UI
                         q: row.Question.replace(/\\s*/gi, "").trim(),
                         a: row.Answer.trim()
                     }));
@@ -104,12 +262,7 @@
                     document.getElementById('game-view').style.display = 'block';
                     document.getElementById('total-num').innerText = flashcards.length;
                     updateCard();
-                } else {
-                    document.getElementById('loading').innerText = "Error: No data found in flashcards.csv";
                 }
-            },
-            error: function(err) {
-                document.getElementById('loading').innerText = "Error loading flashcards.csv. Ensure the file is in the same folder.";
             }
         });
     }
@@ -148,13 +301,6 @@
             currentIndex--;
             updateCard();
         }
-    }
-
-    function resetGame() {
-        currentIndex = 0;
-        document.getElementById('game-view').style.display = 'block';
-        document.getElementById('congrats').style.display = 'none';
-        updateCard();
     }
 
     window.onload = initApp;
