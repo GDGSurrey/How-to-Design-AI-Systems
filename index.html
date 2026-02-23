@@ -1,251 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GDG Surrey | AI Interactive</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Systems & Agentic Orchestration - GDG Surrey</title>
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J60DPDDWYC"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-J60DPDDWYC');
-    </script>
-
+    <!-- External Scripts & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
         :root {
-            --blue: #4285F4; --red: #EA4335; --yellow: #FBBC04; --green: #34A853;
-            --glass: rgba(255, 255, 255, 0.08);
+            --google-blue: #4285f4;
+            --google-red: #ea4335;
+            --google-yellow: #fbbc04;
+            --google-green: #34a853;
+            --google-grey: #5f6368;
+            --google-dark: #202124;
         }
+
         body {
-            font-family: 'Google Sans', sans-serif;
-            margin: 0; min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #020202; color: white; overflow-x: hidden;
+            font-family: "Inter", "Google Sans", sans-serif;
+            background-color: #ffffff;
+            color: #3c4043;
+            margin: 0;
+            scroll-behavior: smooth;
         }
-        .glow-bg {
-            position: fixed; width: 100vw; height: 100vh; z-index: -1;
-            filter: blur(100px); opacity: 0.6;
+
+        /* Branding Colors */
+        .g-blue { color: var(--google-blue); }
+        .g-red { color: var(--google-red); }
+        .g-yellow { color: var(--google-yellow); }
+        .g-green { color: var(--google-green); }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--google-blue), var(--google-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        .google-card {
+            box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+            border-radius: 12px;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .google-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Flashcard Elements */
+        .flashcard-mode { background: #020202 !important; color: white !important; }
+        .glow-bg { position: fixed; width: 100vw; height: 100vh; z-index: -1; filter: blur(100px); opacity: 0.6; pointer-events: none; display: none; }
+        .flashcard-mode .glow-bg { display: block; }
         .orb { position: absolute; border-radius: 50%; opacity: 0.5; }
-        .orb-1 { width: 500px; height: 500px; background: var(--blue); top: -15%; left: -10%; }
-        .orb-2 { width: 450px; height: 450px; background: var(--green); bottom: -10%; right: -10%; }
-        .orb-3 { width: 300px; height: 300px; background: var(--red); top: 30%; right: 15%; opacity: 0.2; }
+        .orb-1 { width: 500px; height: 500px; background: var(--google-blue); top: -15%; left: -10%; }
+        .orb-2 { width: 450px; height: 450px; background: var(--google-green); bottom: -10%; right: -10%; }
 
-        #app-container { width: 100%; max-width: 500px; padding: 25px; z-index: 10; box-sizing: border-box; }
-
-        .tabs {
-            display: flex; background: rgba(255, 255, 255, 0.05);
-            padding: 5px; border-radius: 50px; margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .tab {
-            flex: 1; padding: 12px; text-align: center; cursor: pointer;
-            border-radius: 40px; font-weight: 500; font-size: 0.9rem;
-            transition: all 0.3s ease; color: #777;
-        }
-        .tab.active { background: rgba(255, 255, 255, 0.1); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-
-        .header h1 {
-            font-size: 1.6rem; margin: 0; font-weight: 700;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .progress-container { margin: 15px 0 25px; }
-        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        #progress-fill { 
-            height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), var(--green));
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-container { perspective: 1200px; height: 400px; margin-bottom: 25px; }
-        .card {
-            position: relative; width: 100%; height: 100%;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d; cursor: pointer;
-        }
+        .card-container { perspective: 1200px; height: 400px; width: 100%; max-width: 500px; margin: 25px auto; }
+        .card { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
         .card.is-flipped { transform: rotateY(180deg); }
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 32px;
-            padding: 40px; box-sizing: border-box;
-            display: flex; flex-direction: column; justify-content: flex-start;
-            background: var(--glass); backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-        }
-        .card-back { transform: rotateY(180deg); border-color: rgba(52, 168, 83, 0.2); }
-        .label { font-size: 0.75rem; letter-spacing: 2px; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; }
-        .q-label { color: var(--blue); } .a-label { color: var(--green); }
-        .text-content { font-size: 1.3rem; line-height: 1.5; font-weight: 400; color: #ffffff; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .card-back { transform: rotateY(180deg); border-color: rgba(52, 168, 83, 0.3); }
+        
+        .tab-btn { padding: 10px 24px; border-radius: 50px; font-weight: 600; transition: all 0.3s; color: #777; border: 1px solid rgba(255,255,255,0.1); }
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: white; }
 
-        .controls { display: flex; justify-content: space-between; align-items: center; }
-        button {
-            padding: 16px 35px; border-radius: 50px; font-weight: 700;
-            cursor: pointer; transition: all 0.3s; font-family: inherit; font-size: 0.95rem;
-        }
-        .btn-prev { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; }
-        .btn-next { background: white; color: black; border: none; }
-        button:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        #congrats { display: none; text-align: center; }
-        .finish-btn {
-            display: inline-block; padding: 18px 45px; margin-top: 25px;
-            background: linear-gradient(90deg, var(--blue), var(--green));
-            color: white; text-decoration: none; border-radius: 50px; font-weight: 700;
-        }
-        .disclaimer {
-            margin-top: 40px; font-size: 0.75rem; color: rgba(255,255,255,0.3);
-            text-align: center; line-height: 1.6; padding: 0 20px;
-        }
-        .disclaimer strong { color: rgba(255,255,255,0.6); }
-        .disclaimer a { color: var(--blue); text-decoration: none; font-weight: 500; }
+        @keyframes pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .animated-counter { animation: pulse-soft 3s infinite ease-in-out; font-weight: 800; }
     </style>
 </head>
-<body>
-    <div class="glow-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<body class="antialiased overflow-x-hidden" id="body-tag">
+    
+    <div class="glow-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
 
-    <div id="app-container">
-        <div class="tabs">
-            <div id="tab1" class="tab active" onclick="switchTab(1)">Day 1</div>
-            <div id="tab2" class="tab" onclick="switchTab(2)">Day 2</div>
+    <!-- MAIN NAV -->
+    <header class="border-b border-gray-100 sticky top-0 bg-white z-[100] shadow-sm transition-colors duration-500" id="main-header">
+        <div class="container mx-auto px-6 py-3 flex flex-col md:flex-row items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="https://drive.google.com/thumbnail?id=1SLn2Dp-Qs5scv48mv4UvWxr0bNmwQ0Lf" alt="GDG Logo" class="h-8 w-auto" />
+                <h2 class="text-xl font-bold tracking-tight" id="brand-text">
+                    <span class="g-blue">G</span><span class="g-red">D</span><span class="g-yellow">G</span>
+                    <span class="g-green ml-1">Surrey</span>
+                </h2>
+            </div>
+            
+            <nav class="flex items-center gap-4 mt-3 md:mt-0">
+                <button onclick="setView('home')" id="nav-home" class="text-sm font-bold px-4 py-2 rounded-full bg-blue-50 text-blue-600 transition-all">About</button>
+                <button onclick="setView('flashcards')" id="nav-flash" class="text-sm font-bold px-4 py-2 rounded-full text-gray-500 hover:bg-gray-100 transition-all">Information Hub</button>
+                <a href="https://gdg.community.dev/gdg-surrey/" target="_blank" class="bg-[#4285F4] text-white px-5 py-2 rounded-full text-sm font-bold hover:shadow-lg transition-all ml-2">Join us for next event</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- SECTION: HOME PAGE (ABOUT) -->
+    <main id="home-view" class="block">
+        <div class="w-full bg-black overflow-hidden border-b border-gray-800">
+            <img src="https://drive.google.com/thumbnail?id=1YNFHpxE0GxViNfcsAEU6J4Wu1437FmiM&sz=w1600" alt="Banner" class="w-full h-auto max-h-[400px] object-contain bg-black" />
         </div>
 
-        <div id="main-view">
-            <div id="game-view">
-                <div class="header">
-                    <h1 id="day-title">AI System Design</h1>
-                    <div class="progress-container">
-                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:8px; color:#777;">
-                            <span id="topic-label">AGENTIC ARCHITECTURE</span>
-                            <span><span id="current-num">0</span> / <span id="total-num">0</span></span>
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                    <div class="max-w-3xl">
+                        <h1 class="text-5xl md:text-7xl font-black text-gray-900 mb-6 leading-tight">
+                            AI Systems & <br />
+                            <span class="gradient-text">Agentic Orchestration</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-8 max-w-2xl">
+                            A 2-day workshop series to architect production-ready systems and master agentic flows. Find event recordings, discussion and more on event pages below.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <span class="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-bold border border-blue-100">Feb 21: 9AM - 12PM PST</span>
+                            <span class="px-4 py-2 bg-green-50 text-green-600 rounded-full text-sm font-bold border border-green-100">Feb 22: 9AM - 12PM PST</span>
                         </div>
-                        <div class="progress-bar"><div id="progress-fill"></div></div>
                     </div>
                 </div>
-                
+            </div>
+        </section>
+
+        <!-- Stats and RSVPs -->
+        <section class="container mx-auto px-6 py-12 mb-12">
+            <div class="text-center mb-10">
+                <div class="inline-block bg-white px-8 py-3 rounded-full shadow-md border border-gray-100">
+                    <p class="animated-counter text-blue-600">🚀 400+ developers registered</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="google-card p-8 border-t-8 border-[#4285F4]">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-bold text-2xl">Day 1 • Feb 21</h3>
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold">316 RSVP'd</span>
+                    </div>
+                    <p class="text-gray-600 mb-8">Master system design thinking for production AI. Architectural patterns, technical seams, and trust boundaries.</p>
+                    <a href="https://gdg.community.dev/events/details/google-gdg-surrey-presents-day-1-ai-system-design-amp-agentic-orchestration-workshop/" target="_blank" class="block bg-[#4285F4] text-white py-4 text-center rounded-xl font-bold">View Day 1 Recording</a>
+                </div>
+                <div class="google-card p-8 border-t-8 border-[#34A853]">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-bold text-2xl">Day 2 • Feb 22</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-bold">175 RSVP'd</span>
+                    </div>
+                    <p class="text-gray-600 mb-8">Dive into operational resilience and agentic orchestration. Failure modes and applied reasoning systems.</p>
+                    <a href="https://gdg.community.dev/events/details/google-gdg-surrey-presents-day-2-ai-system-design-amp-agentic-orchestration-workshop/" target="_blank" class="block bg-[#34A853] text-white py-4 text-center rounded-xl font-bold">View Day 2 Details</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expert Panel -->
+        <section class="bg-gray-50 py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-16">Expert Panel</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Dr. Ryan Rad -->
+                    <div class="google-card p-6 flex flex-col items-center text-center">
+                        <a href="https://www.linkedin.com/in/realryanrad/" target="_blank" class="block w-32 h-32 rounded-full overflow-hidden border-4 border-blue-100 mb-4 shadow-lg hover:border-blue-500 transition-colors">
+                            <img src="https://drive.google.com/thumbnail?id=1OfJ3FZi2PoRrWFoKscSBcEymfvA7OKO6&sz=w400" alt="Ryan Rad" class="w-full h-full object-cover" />
+                        </a>
+                        <h4 class="font-bold text-lg">Dr. Ryan Rad</h4>
+                        <p class="text-xs font-black text-blue-600 uppercase">Professor @ Northeastern</p>
+                    </div>
+                    <!-- David Cardozo -->
+                    <div class="google-card p-6 flex flex-col items-center text-center">
+                        <a href="https://www.linkedin.com/in/davidcardozo/" target="_blank" class="block w-32 h-32 rounded-full overflow-hidden border-4 border-red-100 mb-4 shadow-lg hover:border-red-500 transition-colors">
+                            <img src="https://drive.google.com/thumbnail?id=1ahdXCrRs06esxrYr1Ze5FCHz_yxn0XIx&sz=w400" alt="David Cardozo" class="w-full h-full object-cover" />
+                        </a>
+                        <h4 class="font-bold text-lg">David Cardozo</h4>
+                        <p class="text-xs font-black text-red-600 uppercase">Senior AI Engineer @ Dataiku</p>
+                    </div>
+                    <!-- Robina Mirbahar -->
+                    <div class="google-card p-6 flex flex-col items-center text-center">
+                        <a href="https://www.linkedin.com/in/robinamirbahar/" target="_blank" class="block w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-100 mb-4 shadow-lg hover:border-yellow-500 transition-colors">
+                            <img src="https://drive.google.com/thumbnail?id=1S00PdCb28Y9A7FqSW75Rmm67RK1_BpUmbTn-F_qIeSo&sz=w400" alt="Robina" class="w-full h-full object-cover" />
+                        </a>
+                        <h4 class="font-bold text-lg">Robina Mirbahar</h4>
+                        <p class="text-xs font-black text-yellow-600 uppercase">Google Developer Expert</p>
+                    </div>
+                    <!-- Henry Ruiz -->
+                    <div class="google-card p-6 flex flex-col items-center text-center">
+                        <a href="https://www.linkedin.com/in/haruiz/" target="_blank" class="block w-32 h-32 rounded-full overflow-hidden border-4 border-green-100 mb-4 shadow-lg hover:border-green-500 transition-colors">
+                            <img src="https://drive.google.com/thumbnail?id=1fDmOM6BemnCxRSdYATEjNlPrcAGz9Cy8RRoZ9zqHJzo&sz=w400" alt="Henry" class="w-full h-full object-cover" />
+                        </a>
+                        <h4 class="font-bold text-lg">Henry Ruiz, Ph.D</h4>
+                        <p class="text-xs font-black text-green-600 uppercase">AI Research Scientist</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Organizing Committee -->
+        <section class="py-16 bg-white border-t border-gray-100">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-10">Organizing Committee</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="flex flex-col items-center">
+                        <img src="https://drive.google.com/thumbnail?id=1G27M2e2Lant1NB1M8JU65dauJY49QEwz&sz=w300" class="w-16 h-16 rounded-full mb-3" />
+                        <h5 class="font-bold text-sm">Priti Yadav</h5>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <img src="https://drive.google.com/thumbnail?id=1V0bvmY9Qmh3iXyAwmoQJ8_zwcVkUybfX&sz=w300" class="w-16 h-16 rounded-full mb-3" />
+                        <h5 class="font-bold text-sm">Chandralekha P.</h5>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <img src="https://drive.google.com/thumbnail?id=1cRnE7sJpALpBJUtn_OVU30xxlJn5k4c7&sz=w300" class="w-16 h-16 rounded-full mb-3" />
+                        <h5 class="font-bold text-sm">Darshan Parikh</h5>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SECTION: FLASHCARDS -->
+    <main id="flash-view" class="hidden min-h-[90vh] flex items-center justify-center py-10">
+        <div class="w-full max-w-2xl px-6">
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="switchTab(1)" id="tab1" class="tab-btn active">Day 1 Review</button>
+                <button onclick="switchTab(2)" id="tab2" class="tab-btn">Day 2 Insights</button>
+            </div>
+
+            <div id="game-ui">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-1" id="day-title">AI System Design</h2>
+                        <span class="text-xs text-blue-400 font-bold tracking-widest uppercase">KNOWLEDGE DRILL</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-medium text-gray-400"><span id="current-num">1</span> / <span id="total-num">0</span></span>
+                    </div>
+                </div>
+
+                <div class="h-1 w-full bg-white/10 rounded-full mb-8 overflow-hidden">
+                    <div id="progress-fill" class="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500" style="width: 0%"></div>
+                </div>
+
                 <div class="card-container" onclick="flipCard()">
                     <div class="card" id="card-inner">
                         <div class="card-face">
-                            <div class="label q-label">Question</div>
-                            <div class="text-content" id="front-text">Loading...</div>
+                            <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-6">Question</span>
+                            <div class="text-xl md:text-2xl font-medium text-white leading-relaxed" id="front-text">Loading...</div>
                         </div>
                         <div class="card-face card-back">
-                            <div class="label a-label">Answer</div>
-                            <div class="text-content" id="back-text"></div>
+                            <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-6">Answer</span>
+                            <div class="text-lg text-gray-200 leading-relaxed overflow-y-auto" id="back-text"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="controls">
-                    <button class="btn-prev" id="prev-btn" onclick="prevCard()" disabled>Back</button>
-                    <button class="btn-next" id="next-btn" onclick="nextCard()">Next</button>
+                <div class="flex justify-between items-center mt-10">
+                    <button id="prev-btn" onclick="prevCard()" class="px-8 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold disabled:opacity-20 transition-all">Previous</button>
+                    <button id="next-btn" onclick="nextCard()" class="px-10 py-3 rounded-full bg-white text-black font-bold hover:scale-105 transition-all">Next</button>
                 </div>
             </div>
 
-            <div id="congrats">
-                <h1 id="congrats-title" style="font-size: 2.2rem; margin-bottom: 10px;">Day 1 Complete!</h1>
-                <p style="color: #aaa; margin-bottom: 30px;">Great job. Ready for the next session?</p>
-                <a href="https://gdg.community.dev/gdg-surrey/" class="finish-btn" target="_blank">GDG Surrey Hub</a>
+            <div id="congrats" class="hidden text-center py-20">
+                <h1 class="text-5xl font-black mb-4">Great Progress!</h1>
+                <p class="text-gray-400 mb-10">You've mastered the key concepts for this track.</p>
+                <button onclick="resetCards()" class="bg-gradient-to-r from-blue-500 to-green-500 text-white px-10 py-4 rounded-full font-bold">Review Again</button>
             </div>
         </div>
+    </main>
 
-        <div class="disclaimer">
-            This interactive is based on the session:<br>
-            <strong>Day 2: Production-Ready AI & Agentic Design</strong><br>
-            Presented by <a href="https://gdg.community.dev/gdg-surrey/" target="_blank">GDG Surrey</a>
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-white py-16 transition-colors duration-500" id="main-footer">
+        <div class="container mx-auto px-6 text-center">
+            <h4 class="text-2xl font-bold mb-8">Connect with us</h4>
+            <div class="flex flex-wrap justify-center gap-6 mb-12">
+                <a href="https://www.linkedin.com/company/google-developer-groups-surrey/?viewAsMember=true" target="_blank" class="px-6 py-3 bg-[#0a66c2] rounded-xl font-bold hover:scale-105 transition-all">LinkedIn</a>
+                <a href="https://www.meetup.com/google-developer-groups-surrey/?eventOrigin=your_groups" target="_blank" class="px-6 py-3 bg-[#ed1c40] rounded-xl font-bold hover:scale-105 transition-all">Meetup</a>
+                <a href="https://luma.com/user/GoogleDevSurrey" target="_blank" class="px-6 py-3 bg-white text-black rounded-xl font-bold hover:scale-105 transition-all">Luma</a>
+            </div>
+            <p class="text-sm font-bold text-gray-400">GDG Surrey</p>
+            <p class="text-[10px] opacity-50 mt-4">© 2026 GDG Surrey • Part of the global Google Developer Groups program.</p>
         </div>
-    </div>
+    </footer>
 
-<script>
-    let flashcardData = { 1: [], 2: [] };
-    let currentDay = 1;
-    let currentIndex = 0;
+    <script>
+        // Data Sources
+        const day1Cards = [
+            { q: "What is 'Agentic Orchestration'?", a: "The programmatic management of multiple LLM-powered agents to complete complex, multi-step workflows autonomously." },
+            { q: "Define 'Technical Seams' in AI design.", a: "The integration points where traditional software logic meets non-deterministic AI outputs, requiring robust validation." },
+            { q: "Why focus on 'Production-Ready' AI?", a: "Because prototyping is easy, but scaling requires handling latency, cost, security, and reliability." },
+            { q: "What is a 'Trust Boundary'?", a: "A defined point in the system architecture where inputs must be sanitized or outputs must be verified." }
+        ];
 
-    const config = {
-        1: { file: "flashcards.csv", title: "AI System Design", topic: "AGENTIC ARCHITECTURE" },
-        2: { file: "Day_2_Flashcards - Sheet1.csv", title: "Production AI", topic: "EVALUATION & INTERPRETABILITY" }
-    };
+        let day2Cards = [];
+        let currentDay = 1;
+        let currentIndex = 0;
+        let currentSet = [];
 
-    function switchTab(day) {
-        currentDay = day;
-        currentIndex = 0;
-        
-        document.getElementById('tab1').classList.toggle('active', day === 1);
-        document.getElementById('tab2').classList.toggle('active', day === 2);
-        document.getElementById('game-view').style.display = 'block';
-        document.getElementById('congrats').style.display = 'none';
-        document.getElementById('day-title').innerText = config[day].title;
-        document.getElementById('topic-label').innerText = config[day].topic;
-        
-        if (flashcardData[day].length === 0) {
-            loadData(day);
-        } else {
-            updateCard();
-        }
-        
-        if (typeof gtag === 'function') {
-            gtag('event', 'tab_switch', { 'day_selected': day });
-        }
-    }
+        function setView(view) {
+            const home = document.getElementById('home-view');
+            const flash = document.getElementById('flash-view');
+            const body = document.getElementById('body-tag');
+            const header = document.getElementById('main-header');
+            const navHome = document.getElementById('nav-home');
+            const navFlash = document.getElementById('nav-flash');
 
-    function loadData(day) {
-        Papa.parse(config[day].file, {
-            download: true, header: true, skipEmptyLines: true,
-            complete: function(results) {
-                flashcardData[day] = results.data
-                    .filter(row => row.Question && row.Answer)
-                    .map(row => ({
-                        q: row.Question.replace(/\\s*/gi, "").trim(),
-                        a: row.Answer.trim()
-                    }));
-
-                if (flashcardData[day].length > 0) {
-                    updateCard();
-                }
+            if (view === 'flashcards') {
+                home.classList.add('hidden');
+                flash.classList.replace('hidden', 'flex');
+                body.classList.add('flashcard-mode');
+                header.style.backgroundColor = 'rgba(2, 2, 2, 0.9)';
+                header.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                navFlash.classList.add('bg-white/10', 'text-white');
+                navHome.classList.remove('bg-blue-50', 'text-blue-600');
+                loadSet(currentDay);
+            } else {
+                home.classList.remove('hidden');
+                flash.classList.replace('flex', 'hidden');
+                body.classList.remove('flashcard-mode');
+                header.style.backgroundColor = '#fff';
+                header.style.borderColor = '#f3f4f6';
+                navHome.classList.add('bg-blue-50', 'text-blue-600');
+                navFlash.classList.remove('bg-white/10', 'text-white');
             }
-        });
-    }
-
-    function updateCard() {
-        const cards = flashcardData[currentDay];
-        const cardInner = document.getElementById('card-inner');
-        cardInner.classList.remove('is-flipped');
-        
-        setTimeout(() => {
-            document.getElementById('front-text').innerText = cards[currentIndex].q;
-            document.getElementById('back-text').innerText = cards[currentIndex].a;
-            document.getElementById('current-num').innerText = currentIndex + 1;
-            document.getElementById('total-num').innerText = cards.length;
-            document.getElementById('progress-fill').style.width = ((currentIndex + 1) / cards.length * 100) + "%";
-            document.getElementById('prev-btn').disabled = currentIndex === 0;
-            document.getElementById('next-btn').innerText = currentIndex === cards.length - 1 ? "Finish" : "Next";
-        }, 150);
-    }
-
-    function flipCard() { document.getElementById('card-inner').classList.toggle('is-flipped'); }
-
-    function nextCard() {
-        const cards = flashcardData[currentDay];
-        if (currentIndex < cards.length - 1) {
-            currentIndex++;
-            updateCard();
-        } else {
-            if (typeof gtag === 'function') { gtag('event', 'completion_day' + currentDay); }
-            document.getElementById('congrats-title').innerText = "Day " + currentDay + " Complete!";
-            document.getElementById('game-view').style.display = 'none';
-            document.getElementById('congrats').style.display = 'block';
         }
-    }
 
-    function prevCard() {
-        if (currentIndex > 0) { currentIndex--; updateCard(); }
-    }
+        function loadSet(day) {
+            currentDay = day;
+            currentIndex = 0;
+            currentSet = (day === 1) ? day1Cards : (day2Cards.length ? day2Cards : [{q: "Loading...", a: "Parsing CSV..."}]);
+            document.getElementById('day-title').innerText = (day === 1) ? "AI System Design" : "Agentic Orchestration";
+            updateCard();
+            document.getElementById('game-ui').classList.remove('hidden');
+            document.getElementById('congrats').classList.add('hidden');
+        }
 
-    window.onload = () => switchTab(1);
-</script>
+        function switchTab(day) {
+            document.getElementById('tab1').classList.toggle('active', day === 1);
+            document.getElementById('tab2').classList.toggle('active', day === 2);
+            loadSet(day);
+        }
+
+        function flipCard() { document.getElementById('card-inner').classList.toggle('is-flipped'); }
+
+        function updateCard() {
+            if (!currentSet.length) return;
+            const card = currentSet[currentIndex];
+            document.getElementById('front-text').innerText = card.q;
+            document.getElementById('back-text').innerText = card.a;
+            document.getElementById('current-num').innerText = currentIndex + 1;
+            document.getElementById('total-num').innerText = currentSet.length;
+            document.getElementById('card-inner').classList.remove('is-flipped');
+            const progress = ((currentIndex + 1) / currentSet.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+            document.getElementById('next-btn').innerText = (currentIndex === currentSet.length - 1) ? "Finish" : "Next";
+        }
+
+        function nextCard() {
+            if (currentIndex < currentSet.length - 1) { currentIndex++; updateCard(); }
+            else { document.getElementById('game-ui').classList.add('hidden'); document.getElementById('congrats').classList.remove('hidden'); }
+        }
+
+        function prevCard() { if (currentIndex > 0) { currentIndex--; updateCard(); } }
+        function resetCards() { currentIndex = 0; loadSet(currentDay); }
+
+        async function fetchDay2Data() {
+            const csvData = `Question,Answer
+"In multi-agent systems, what is the 'bye-check trap' regarding model evaluation?",The false belief that manual prompting and subjective verification are efficient ways to evaluate a probabilistic system.
+"According to the source, why is emerging cognition important in science and engineering multi-agent systems?","It enables real-time knowledge synthesis from diverse multimodal, structural, and unstructured data."
+What is the primary technical challenge when agents must interact with 'legacy tools'?,Designing protocols that allow native interaction without building thousands of specialized individual tool implementations.
+"The process of moving from manual prompt engineering to automated, deterministic checks in a CI/CD pipeline is termed _____.",Continuous Evaluation
+How does an 'LLM-as-a-Judge' differ from deterministic evaluation?,It utilizes a second language model to qualitatively evaluate the reasoning and outputs of the primary agent based on structured rubrics.
+What core problem in deep learning does 'Mechanistic Interpretability' attempt to solve?,The problem of neural networks functioning as 'black boxes' where internal reasoning is opaque to humans.`;
+
+            Papa.parse(csvData, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    day2Cards = results.data.map(row => ({ q: row.Question, a: row.Answer }));
+                    if (currentDay === 2) updateCard();
+                }
+            });
+        }
+
+        window.onload = () => { fetchDay2Data(); };
+    </script>
 </body>
 </html>
