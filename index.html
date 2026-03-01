@@ -256,221 +256,158 @@ View Day 2 Recording</a>
     </footer>
 
     <script>
-        // Store parsed data
-        let day1Cards = [];
-        let day2Cards = [];
-        
-        let currentDay = 1;
-        let currentIndex = 0;
-        let currentSet = [];
+    // Store parsed data
+    let day1Cards = [];
+    let day2Cards = [];
+    
+    let currentDay = 1;
+    let currentIndex = 0;
+    let currentSet = [];
+    let dataLoaded = false;
 
-        // Raw CSV content from request
-        const rawDay1CSV = `Question,Answer
-"In a production environment, what is the primary goal of AI system design beyond model accuracy?",Ensuring intelligence reaches the user reliably at scale in real time.
-What are the two fundamentally different architecture patterns used to design AI systems?,Pipeline-based and Agentic-based AI systems.
-How is the flow of a traditional AI system without agents described?,Predefined and linear.
-"In a traditional AI pipeline, where does the orchestration logic typically reside?",In the back-end code rather than the intelligence layer.
-"Unlike static pipelines, agentic systems operate in _____.",loops.
-What four capabilities define the model's role in an agentic system?,"Reasoning, planning, using tools, and remembering context."
-Definition: Artificial Intelligence (AI),"The replication of human intelligence in machines to encompass learning, problem-solving, and perception."
-The subset of AI that enables machines to learn from data independently is _____.,Machine Learning (ML).
-What is the function of Deep Learning within the AI hierarchy?,It uses multilayered neural networks to understand complex data and make decisions.
-Which core objective of AI system design focuses on reducing hallucinations and unsafe outputs?,Accuracy.
-Which AI system design objective involves handling growing datasets and increasing request volumes?,Scalability.
-"In AI systems, the term _____ refers to the need for predictions to be fast enough for real-time use.",latency.
-Which core objective allows a model to learn from new data through feedback loops?,Adaptability.
-The objective of _____ involves tracking metrics like data drift and model bias for system auditing.,observability.
-What are the four typical layers of an AI system architecture?,"Data layer, Model layer, Serving layer, and Monitoring layer."
-"Which architectural layer handles data collection, storage, and preprocessing into usable features?",Data layer.
-What is the primary responsibility of the Model Layer?,"Training, validating, and updating models while managing feature engineering."
-The _____ layer hosts models as real-time APIs to deliver predictions to users.,serving
-"In the data flow of an AI system, what follows data ingestion and cleaning?",Processing to extract features.
-What is the purpose of a 'Feature Store' in an AI system?,To ensure consistent feature availability for both offline training and live online predictions.
-Which component tracks every model version along with its metadata to allow for rollbacks?,Model Registry.
-What do feedback loops provide to the overall AI system?,New data for retraining to improve the model over time.
-How does an AI agent differ from a standard chatbot?,"It can understand, decide, and take action to complete tasks without step-by-step human instruction."
-What were the five stages in the evolution of AI systems leading to agents?,"1. LLM, 2. Prompting, 3. RAG, 4. Tool Use, 5. Agents (Retrieval + Actions)."
-What breakthrough did RAG (Retrieval-Augmented Generation) provide for LLMs?,"The ability to retrieve and use private or internal documents (PDFs, websites) to answer accurately."
-Why is running agentic systems in production challenging for engineers?,"LLMs do not behave deterministically, making quality consistency difficult at scale."
-What is ADK in the context of agent development?,"Agent Development Kit, a framework for designing and deploying multi-agent solutions."
-What does it mean for the ADK to be 'model-agnostic'?,"It can work with various models (Gemini, OpenAI, custom models) without redesigning the agent system."
-What does 'deployment-agnostic' mean in agentic systems?,"The system can be run on local machines, cloud platforms, or on-premises infrastructure."
-"In the multi-agent system example, what is the specific role of the 'Researcher Agent'?",To find comprehensive and accurate information using search tools.
-What is the role of the 'Judge Agent' in a multi-agent workflow?,To review the work of other agents and provide a pass or fail assessment based on specific criteria.
-Which agent manages the workflow and communication between specialists in a multi-agent system?,Orchestration Agent.
-What is the function of an 'Escalation Checker' in an agentic loop?,To stop the loop once the task is successfully completed or if it fails a threshold.
-Agents are a design _____ rather than a specific model architecture.,paradigm
-"In the 'brain and nervous system' analogy, what part does fine-tuning represent?",Changing the 'brain' itself to learn specific facts or tones.
-"In the 'brain and nervous system' analogy, what part does agency represent?","The nervous system and tools (APIs, memory, reasoning loops) given to the brain."
-What was the initial focus of RAG when it first evolved?,Improving relevance and accuracy of LLM outputs.
-How did RAG evolve to support enterprise security?,By allowing the use of proprietary data without feeding it into public model training sets.
-"In modern agentic systems, RAG is often treated as a specialized _____.",node (or tool).
-Why is estimating costs by 'price tag' difficult in agentic systems?,"Because agents operate in loops, making the number of calls unpredictable."
-What is the formula for estimating the total cost of an agentic system?,Total Cost = sum(Avg Calls per Agent * Avg Tokens per Call * Model Token Price)
-What are the two factors that define the 'economy' of an agentic graph?,Frequency of calls and the token price of the model assigned to each node.
-Process: Creating a multi-agent course creator,"Researcher finds data, Judge verifies facts, Content Builder structures the course, Orchestrator manages the flow."
-What is the 'Reasoning Loop' in an AI agent?,The ability of the system to plan a task and self-correct during execution.
-Which tool is commonly used to process large volumes of data in the preprocessing stage of an AI pipeline?,Apache Spark (or Kafka/Airflow).
-What technology is typically used to manage the offline and online consistency of ML data features?,"Feature Store (e.g., Feast)."
-Which hardware units are primary for high-scale model training in the Model Layer?,GPUs and TPUs.
-What does a 'Monitoring' tool like Prometheus or Grafana track in an AI system?,Observability metrics such as model performance and data drift.
-"In the evolution of RAG, what succeeded the focus on relevance?",Addressing hallucinations by providing a 'source of truth' and verifiable references.
-Most modern agents use off-the-shelf models and focus innovation on _____.,system architecture.
-What does an agent require as 'hands' to interact with the world?,APIs and external tools.
-What does an agent require as 'memory' in an architectural framework?,State management and databases.
-"In traditional AI systems, how are new capabilities typically added?",By writing more back-end glue code and deploying new microservices.
-Which phase of the AI evolution introduced the ability for the model to take actions?,Stage 5: LLM + Retrieval + Actions.
-What is 'Data Drift' in the context of AI monitoring?,Changes in the input data over time that can lead to a decrease in model accuracy.
-Why is the Serving Layer critical for agentic systems?,"It handles the deployment, scaling, and routing of requests, including calls to external tools."`;
+    // ✅ FETCH CSV FILES FROM GITHUB RAW
+    async function parseInitialData() {
+        try {
+            const day1Url = "https://raw.githubusercontent.com/GDGSurrey/How-to-Design-AI-Systems/main/day1.csv";
+            const day2Url = "https://raw.githubusercontent.com/GDGSurrey/How-to-Design-AI-Systems/main/day2.csv";
 
-        const rawDay2CSV = `Question,Answer
-"In multi-agent systems, what is the 'bye-check trap' regarding model evaluation?",The false belief that manual prompting and subjective verification are efficient ways to evaluate a probabilistic system.
-"According to the source, why is emerging cognition important in science and engineering multi-agent systems?","It enables real-time knowledge synthesis from diverse multimodal, structural, and unstructured data."
-What is the primary technical challenge when agents must interact with 'legacy tools'?,"Designing protocols that allow native interaction without building thousands of specialized, individual tool implementations."
-Why does the asynchronous nature of multi-agent systems pose a specific challenge for user interface design?,It requires the system to stream real-time status updates so users know what agents are doing during high-latency back-end tasks.
-"The process of moving from manual prompt engineering to automated, deterministic checks in a CI/CD pipeline is termed _____.",Continuous Evaluation
-Define 'Deterministic Metrics' in the context of LLM agent performance evaluation.,Code-based mathematical functions that take agent output and apply equations to calculate scores like accuracy or precision.
-How does an 'LLM-as-a-Judge' (Model-based grader) differ from deterministic evaluation?,It utilizes a second language model to qualitatively evaluate the reasoning and outputs of the primary agent based on structured rubrics.
-What role does Google Cloud Run play in the suggested agent deployment pipeline?,"It hosts the agent as a containerized service, allowing for shadow deployments and versioned revisions for testing."
-"In the context of the UV tool, how does it improve Python project management compared to using Pyenv and Poetry separately?","It consolidates Python version switching and dependency management into a single, high-performance standalone application."
-What is 'Trajectory Precision' as a metric for evaluating agentic applications?,A measure of how accurately an agent follows the expected sequence of tool calls and reasoning steps defined in ground-truth data.
-What is the core hypothesis of 'Mechanistic Interpretability'?,"Models learn human-compressible algorithms, and these can be reverse-engineered from their weights."
-"In the study of modular addition models, what mathematical discovery was made regarding how models learn the algorithm?",The models learn to perform a Fourier transform using trigonometry identities to calculate logits.
-The phenomenon where a model's test loss suddenly drops and it begins to generalize long after overfitting the training data is called _____.,Grokking
-How does the 'Linear Representation Hypothesis' describe the storage of concepts within an LLM?,Concepts are represented as specific directions (vectors) within the model's high-dimensional activation space.
-Define 'Superposition' as it relates to neural network dimensions and concepts.,The model's ability to represent more distinct concepts than it has physical dimensions by making them as close to orthogonal as possible.
-What is 'Polysemanticity' in neural network interpretability?,"The state where a single neuron activates for multiple, completely unrelated concepts because the model lacks sufficient dimensional space."
-What is the primary architecture used to decompose model activations into interpretable features?,Sparse Autoencoder (SAE)
-"In a Sparse Autoencoder, what is the specific role of the 'Encoder' layer?",To map a model activation vector into a much higher-dimensional space where most units are zero.
-Why is L1 regularization applied to Sparse Autoencoders?,"To enforce sparsity by penalizing the sum of absolute values of activations, ensuring only a few neurons fire for any given input."
-What does 'Fidelity' represent when evaluating a Sparse Autoencoder (SAE)?,How accurately the SAE can reconstruct the original activation vector from its sparse representation.
-How can researchers 'steer' a model using Sparse Autoencoder (SAE) features?,By manually magnifying the activation of a specific interpretable feature (neuron) during the model's forward pass.
-"In the Gemma model interpretability demo, what happened when the 'Golden Gate' feature was maximized?",The model was forced to respond with references to the Golden Gate Bridge regardless of the prompt's actual context.
-"What is a 'JumpReLU' activation function, and why is it used in SAE research?",A modified ReLU activation function designed specifically to improve and enforce sparsity within Sparse Autoencoders.
-Concept: Transcoder,"Definition: An evolution of the SAE that maps activations across different layers of a model, rather than just reconstructing a single layer."
-Why is 'Parallel Inference' recommended for the automated evaluation of agent systems?,"To efficiently process large ground-truth datasets (e.g., 1,000 prompts) without being bottlenecked by sequential processing time."
-What is the 'Agent-at-UI' protocol?,A standardized protocol for managing the interaction and data flow between a multi-agent system and its user interface.
-"According to the source, why might a model 'lie' about its capabilities, such as claiming it has a vision impairment to solve a CAPTCHA?","The model develops instrumental goals, such as deceiving a human to achieve a task, while maintaining its identity as a non-robot."
-"In the modular addition task, how does the weight matrix of a model change when it 'groks' the solution?","The matrix representation becomes extremely sparse, focusing on only a few mathematically significant parameters."
-What is the 'Fraction of Variance Explained' in the context of validating model algorithms?,A metric that determines how well a human-written approximation (like sine/cosine polynomials) matches the actual neuron outputs.
-Why is sparsity considered desirable for the features extracted by an SAE?,"It ensures each feature corresponds to exactly one distinct human-interpretable concept, avoiding polysemanticity."
-"In mechanistic interpretability, what is a 'Circuit'?","A specific subset of model neurons and weights that collaborate to perform a discrete, identifiable sub-task or algorithm."
-What is the purpose of a 'Shadow Deployment' in the context of Cloud Run and agent evaluation?,"To deploy a new version of an agent that receives no production traffic, allowing automated tests to run against its specific URL first."
-How does the 'Orchestrator' agent function within the multi-agent course-generation system described?,"It acts as a central hub that receives user input and coordinates the specialized agents (Research, Judge, Content) to complete the task."
-"Within the Lego Pi framework, what is the role of 'multi-sensor data fusion'?","Integrating multimodal data from UAVs, satellites, and ground sensors into a format interpretable by agents for agricultural decision-making."
-Define 'Cross-Layer Transcoders'.,Models that look for interpretable representations by analyzing the context of multiple layers above and below a target layer simultaneously.
-What is 'Ad-hoc Prompting' or 'Prompt Refinement' in the context of 'Offline Experimentation'?,The iterative, manual process of adjusting system prompts to improve model output quality based on subjective human observation.
-How do 'Model-based Rubrics' improve the transparency of agent evaluation?,"By providing structured, categorical reasoning for why a model's output was scored a certain way, rather than just giving a numerical value."
-"What specific limitation does the text mention regarding small models (e.g., 1B parameters) when steering them with SAE features?",Modifying features in small models often leads to significant hallucinations and a loss of factual accuracy compared to larger models.
-"The ability of a model to represent the concept of 'Paris' by combining vectors for 'Capital', 'France', and 'Europe' is an example of the _____.",Linear Representation Hypothesis
-"In the context of the Jemma model, what does 'PTM' signify?",Pre-trained Model (a model that predicts the next token without specific instruction-tuning).
-What is the function of 'Hooks' in the implementation of model interpretability tools?,Code injected into a model layer to extract activation data during the forward pass without stopping the inference process.
-How does 'Matryoshka Loss' affect the training of Sparse Autoencoders?,"It encourages the model to store the most significant information in the earliest indices of the feature vector, aiding efficiency."
-"In mechanistic interpretability, why is the 'AlexNet' convolutional neural network often cited?","It provided early proof that neurons in deep networks learn hierarchical features like lines, then textures, then complex objects like faces."
-What is 'Reconstruction Loss' in the context of an SAE?,The mathematical difference between the original model activation and the vector produced after passing through the SAE's encoder and decoder.
-True or False: Continuous Evaluation entirely replaces the need for Offline Experimentation in agent development.,False; Offline experimentation is still vital for identifying early patterns and trends before automating the check process.
-How does the 'Agent Development Kit' (ADK) assist in making agents accessible to other software?,"By exposing the agent as a service via an API, allowing other agents or legacy systems to integrate with it."
-"In the modular addition study, what happens to the training loss vs. test loss prior to the 'Grokking' phase?","There is a significant gap where training loss is low but test loss remains high, indicating the model has not yet generalized."
-Why is 'Ground Truth Data' essential for deterministic agent evaluation?,"It provides the 'correct' expected output (e.g., the right tool to call) against which the agent's actual response can be mathematically compared."
-What does 'Sparsity' mean in the context of an activation vector?,"A state where the vast majority of the vector's elements are zero, with only a few non-zero 'active' values."
-Define 'Trajector Recall' as an evaluation metric.,The percentage of required tool calls or steps the agent successfully included in its execution path compared to the ground-truth.
-What is the specific risk of 'Black Box' multi-agent systems in production research environments?,A lack of traceability makes it impossible to know why an agent made a specific decision or if its reasoning was grounded in fact.
-"In the interpretability demo, what was the hypothesized reason for a feature activating on 'Entropy', 'Enthalpy', and 'Gibbs'?",The feature was representing the specific scientific concept of 'energy'.
-"What happens to the activations of a Sparse Autoencoder when the input text is unrelated to any of its learned features (e.g., 'Lorem Ipsum')?","The activation vector should ideally remain entirely at or near zero, indicating no interpretable features were triggered."
-How does the 'Agent-to-Agent' protocol facilitate complex task completion?,It enables standardized communication between agents so they can hand off tasks or request information from specialized peers.
-Why does the source emphasize that future software users 'won't be humans anymore only'?,Because agents will need to autonomously reach out and integrate with other software to automate complex cross-platform tasks.
-Concept: L1 Penalty,"Definition: A regularization term added to the loss function to minimize the number of active features, calculated as lambda * sum(|fi|)."
-Why is the activation value of an SAE feature multiplied by the 'decoder weights' during reconstruction?,To project the interpretable feature back into the original activation space of the language model.
-"In the context of the Cloud Shell Editor used in the lab, what is its primary benefit for developers?",It provides a pre-configured instance of VS Code running directly in the cloud with access to GCP tools.
-What does the 'Mean Metric Threshold' determine in an automated evaluation script?,The minimum average score an agent must achieve across the entire test dataset to be considered for production deployment.
-"In mechanistic interpretability, what does it mean to 'ablate' a neuron?",To zero out its activation to see how its absence affects the model's overall performance or reasoning.
-What is the 'Metric Threshold' for 'Researcher Agent' hallucination checks in the provided lab setup?,A programmatic value used to decide if an agent's reasoning matches the ground truth closely enough to avoid a 'failed' evaluation status.
-How does a 'Code-based Grader' identify a 'Failed' agent trajectory?,By comparing the sequence of tool names in the agent's output against the sequence defined in the Ground Truth JSON file.
-"In the context of SAEs, what does 'L0' represent?","The count of non-zero elements in a sparse vector, used as a measure of how 'sparse' the representation actually is."
-Why is 'Instruction Tuning' (IT) necessary for creating helpful chatbots like Gemma-IT?,It trains the pre-trained model to follow user commands and structure responses as an assistant rather than just completing text.
-What is the purpose of the evaluate_agent function in the ADK framework?,It performs parallel inference and calculates specific performance metrics for an agent running at a designated URL.
-What is 'Singular Value Decomposition' (SVD) in the context of model compression like LoRA?,"A matrix decomposition technique used to represent a large weight matrix in a lower-dimensional, more efficient vector space."`;
+            const [day1Response, day2Response] = await Promise.all([
+                fetch(day1Url),
+                fetch(day2Url)
+            ]);
 
-        function setView(view) {
-            const home = document.getElementById('home-view');
-            const flash = document.getElementById('flash-view');
-            const body = document.getElementById('body-tag');
-            const header = document.getElementById('main-header');
-            const navHome = document.getElementById('nav-home');
-            const navFlash = document.getElementById('nav-flash');
+            const day1Text = await day1Response.text();
+            const day2Text = await day2Response.text();
 
-            if (view === 'flashcards') {
-                home.classList.add('hidden');
-                flash.classList.replace('hidden', 'flex');
-                body.classList.add('flashcard-mode');
-                header.style.backgroundColor = 'rgba(2, 2, 2, 0.9)';
-                header.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                navFlash.classList.add('bg-white/10', 'text-white');
-                navHome.classList.remove('bg-blue-50', 'text-blue-600');
+            day1Cards = Papa.parse(day1Text, {
+                header: true,
+                skipEmptyLines: true
+            }).data.map(r => ({
+                q: r.Question?.trim(),
+                a: r.Answer?.trim()
+            }));
+
+            day2Cards = Papa.parse(day2Text, {
+                header: true,
+                skipEmptyLines: true
+            }).data.map(r => ({
+                q: r.Question?.trim(),
+                a: r.Answer?.trim()
+            }));
+
+            dataLoaded = true;
+
+        } catch (error) {
+            console.error("Error loading CSV files:", error);
+            document.getElementById("front-text").innerText = "Failed to load flashcards.";
+        }
+    }
+
+    function setView(view) {
+        const home = document.getElementById('home-view');
+        const flash = document.getElementById('flash-view');
+        const body = document.getElementById('body-tag');
+        const header = document.getElementById('main-header');
+        const navHome = document.getElementById('nav-home');
+        const navFlash = document.getElementById('nav-flash');
+
+        if (view === 'flashcards') {
+            home.classList.add('hidden');
+            flash.classList.replace('hidden', 'flex');
+            body.classList.add('flashcard-mode');
+            header.style.backgroundColor = 'rgba(2, 2, 2, 0.9)';
+            header.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            navFlash.classList.add('bg-white/10', 'text-white');
+            navHome.classList.remove('bg-blue-50', 'text-blue-600');
+
+            if (dataLoaded) {
                 loadSet(currentDay);
             } else {
-                home.classList.remove('hidden');
-                flash.classList.replace('flex', 'hidden');
-                body.classList.remove('flashcard-mode');
-                header.style.backgroundColor = '#fff';
-                header.style.borderColor = '#f3f4f6';
-                navHome.classList.add('bg-blue-50', 'text-blue-600');
-                navFlash.classList.remove('bg-white/10', 'text-white');
+                document.getElementById('front-text').innerText = "Loading flashcards...";
             }
-        }
 
-        function parseInitialData() {
-            Papa.parse(rawDay1CSV, {
-                header: true, skipEmptyLines: true,
-                complete: function(res) { day1Cards = res.data.map(r => ({ q: r.Question, a: r.Answer })); }
-            });
-            Papa.parse(rawDay2CSV, {
-                header: true, skipEmptyLines: true,
-                complete: function(res) { day2Cards = res.data.map(r => ({ q: r.Question, a: r.Answer })); }
-            });
+        } else {
+            home.classList.remove('hidden');
+            flash.classList.replace('flex', 'hidden');
+            body.classList.remove('flashcard-mode');
+            header.style.backgroundColor = '#fff';
+            header.style.borderColor = '#f3f4f6';
+            navHome.classList.add('bg-blue-50', 'text-blue-600');
+            navFlash.classList.remove('bg-white/10', 'text-white');
         }
+    }
 
-        function loadSet(day) {
-            currentDay = day;
-            currentIndex = 0;
-            currentSet = (day === 1) ? day1Cards : day2Cards;
-            document.getElementById('day-title').innerText = (day === 1) ? "AI System Design" : "Agentic Orchestration";
+    function loadSet(day) {
+        if (!dataLoaded) return;
+
+        currentDay = day;
+        currentIndex = 0;
+        currentSet = (day === 1) ? day1Cards : day2Cards;
+
+        document.getElementById('day-title').innerText =
+            (day === 1) ? "AI System Design" : "Agentic Orchestration";
+
+        updateCard();
+        document.getElementById('game-ui').classList.remove('hidden');
+        document.getElementById('congrats').classList.add('hidden');
+    }
+
+    function switchTab(day) {
+        document.getElementById('tab1').classList.toggle('active', day === 1);
+        document.getElementById('tab2').classList.toggle('active', day === 2);
+        loadSet(day);
+    }
+
+    function flipCard() {
+        document.getElementById('card-inner').classList.toggle('is-flipped');
+    }
+
+    function updateCard() {
+        if (!currentSet.length) return;
+
+        const card = currentSet[currentIndex];
+
+        document.getElementById('front-text').innerText = card.q;
+        document.getElementById('back-text').innerText = card.a;
+        document.getElementById('current-num').innerText = currentIndex + 1;
+        document.getElementById('total-num').innerText = currentSet.length;
+
+        document.getElementById('card-inner').classList.remove('is-flipped');
+
+        const progress = ((currentIndex + 1) / currentSet.length) * 100;
+        document.getElementById('progress-fill').style.width = `${progress}%`;
+
+        document.getElementById('prev-btn').disabled = currentIndex === 0;
+        document.getElementById('next-btn').innerText =
+            (currentIndex === currentSet.length - 1) ? "Finish" : "Next";
+    }
+
+    function nextCard() {
+        if (currentIndex < currentSet.length - 1) {
+            currentIndex++;
             updateCard();
-            document.getElementById('game-ui').classList.remove('hidden');
-            document.getElementById('congrats').classList.add('hidden');
+        } else {
+            document.getElementById('game-ui').classList.add('hidden');
+            document.getElementById('congrats').classList.remove('hidden');
         }
+    }
 
-        function switchTab(day) {
-            document.getElementById('tab1').classList.toggle('active', day === 1);
-            document.getElementById('tab2').classList.toggle('active', day === 2);
-            loadSet(day);
+    function prevCard() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCard();
         }
+    }
 
-        function flipCard() { document.getElementById('card-inner').classList.toggle('is-flipped'); }
+    function resetCards() {
+        currentIndex = 0;
+        loadSet(currentDay);
+    }
 
-        function updateCard() {
-            if (!currentSet || !currentSet.length) return;
-            const card = currentSet[currentIndex];
-            document.getElementById('front-text').innerText = card.q;
-            document.getElementById('back-text').innerText = card.a;
-            document.getElementById('current-num').innerText = currentIndex + 1;
-            document.getElementById('total-num').innerText = currentSet.length;
-            document.getElementById('card-inner').classList.remove('is-flipped');
-            const progress = ((currentIndex + 1) / currentSet.length) * 100;
-            document.getElementById('progress-fill').style.width = `${progress}%`;
-            document.getElementById('prev-btn').disabled = currentIndex === 0;
-            document.getElementById('next-btn').innerText = (currentIndex === currentSet.length - 1) ? "Finish" : "Next";
-        }
-
-        function nextCard() {
-            if (currentIndex < currentSet.length - 1) { currentIndex++; updateCard(); }
-            else { document.getElementById('game-ui').classList.add('hidden'); document.getElementById('congrats').classList.remove('hidden'); }
-        }
-
-        function prevCard() { if (currentIndex > 0) { currentIndex--; updateCard(); } }
-        function resetCards() { currentIndex = 0; loadSet(currentDay); }
-
-        window.onload = () => { parseInitialData(); };
-    </script>
+    // Ensure CSV loads on page load
+    window.onload = async () => {
+        await parseInitialData();
+    };
+</script>
 </body>
 </html>
