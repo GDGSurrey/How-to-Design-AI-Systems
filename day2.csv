@@ -1,0 +1,65 @@
+"According to Dr. Marcus Bueller, what do multi-agent AI systems enable in the fields of science and engineering?",They enable real-time knowledge synthesis and emerging cognition.
+What is the primary function of the multi-agent framework 'LegoPi'?,It transforms non-structural multimodal sensor data into actionable information for researchers.
+What shift in software design is predicted regarding the future 'users' of applications?,"Future users will be agents rather than only humans, requiring software that agents can natively integrate with."
+How must data be modeled to be 'accessible' for LLM-based agents?,"It must be descriptively defined so agents understand the format, dimensions, and storage structure."
+Why do multi-agent systems present a unique challenge regarding task latency?,They often work on asynchronous tasks where the completion time is unknown and outside direct control.
+"In multi-agent systems, what is the purpose of tracing every interaction in the backend?",To provide transparency so users know the state of the system and exactly what agents are doing.
+What is one major limitation when trying to integrate agents with legacy software tools?,The need to implement thousands of specific tools for interaction rather than using native protocols.
+Name two primary focus areas for building 'trustworthy' AI agents mentioned by Henry.,Reducing hallucinations and defining effective human-agent interfaces.
+What is the 'Pie Check Trap' in the context of evaluating multi-agent systems?,The belief that manually chatting and prompting a system is an efficient way to evaluate performance.
+Why is manual chatting considered a non-deterministic way to evaluate agents?,"Agents are probabilistic systems that can yield different outputs for the same input, making patterns hard to verify manually."
+How does 'continuous evaluation' differ from 'offline experimentation' for agents?,"Continuous evaluation automates checks within a CI/CD pipeline, whereas offline experimentation involves manual prompting and refinement."
+What is the role of 'Shadow Deployment' in a Cloud Run environment for agent updates?,It allows a new revision to be deployed and evaluated against metrics before receiving any production traffic.
+Contrast 'deterministic' and 'probabilistic' agent performance metrics.,Deterministic metrics use code-based mathematical functions; probabilistic metrics use model-based graders (LLM-as-a-judge).
+What specific toolkit is used in the provided lab to run metrics like hallucination checks?,Vertex AI Evaluation Toolkit.
+"In the Agent SDK (ADK) course generation example, what is the role of the 'Orchestrator'?",It manages the workflow and directs tasks to specialized agents like the Researcher or Judge.
+What is the purpose of using 'Parallel Inference' during the evaluation of an agent dataset?,To process multiple prompts simultaneously rather than sequentially to avoid holding up the pipeline.
+What is 'Mechanical Interpretability' in the context of LLMs?,The process of reverse-engineering a trained neural network's weights into human-understandable algorithms.
+What is the core hypothesis of mechanical interpretability regarding how models learn?,Models learn human-compressible algorithms because they are useful for minimizing loss.
+"In early convolutional neural networks (CNNs), what do the 'first layers' typically learn to detect?",Simple linear features such as lines and circles.
+What mathematical operation does an LLM effectively learn to perform 'modular addition'?,A Fourier transform using trigonometric identities (sines and cosines).
+Define the 'Grokking' phenomenon in deep learning.,A point where a model suddenly learns to generalize after a long period of overfitting.
+How do the weights of an embedding matrix change when a model reaches the 'Grokking' point?,"The weights become extremely sparse, with only a few parameters carrying the essential information."
+Why is measuring 'cognition' in LLMs considered a major mystery or challenge?,It is difficult to determine if a model has truly learned a concept or is simply 'faking' alignment to satisfy human measures.
+How did GPT-4 'lie' during the CAPTCHA experiment recorded in its model card?,It told a TaskRabbit worker it had a vision impairment to avoid revealing it was a robot.
+What is the 'Linear Representation Hypothesis'?,The idea that LLMs represent concepts as specific directions or vectors within a high-dimensional space.
+Define 'Polysemantic Neurons'.,Neurons that activate for multiple unrelated concepts due to having more concepts than available dimensions.
+What is 'Superposition' in neural network theory?,A state where a model represents more concepts than it has dimensions by making them almost orthogonal.
+What is the primary function of a 'Sparse Autoencoder' (SAE) in interpretability research?,"To decompose model activations into a large number of sparse, human-interpretable features."
+"In a Sparse Autoencoder, what is the role of the 'Encoder'?",It maps a model activation vector into a high-dimensional space where most units are zero.
+What is the role of the 'Decoder' in a Sparse Autoencoder?,It attempts to reconstruct the original activation vector from the sparse representation provided by the encoder.
+What mathematical constraint is applied to force 'sparsity' in an SAE?,$L_1$ regularization.
+Which open-source model collection from Google DeepMind provides pre-trained SAEs for Gemma models?,Gemma Scope.
+What is 'Feature Steering' in LLM interpretability?,Manually magnifying a specific feature neuron to force the model to adopt a certain behavior or topic.
+What occurred when researchers maximized the 'Golden Gate' neuron in an Anthropic model?,"The model mentioned the Golden Gate Bridge in almost every response, even on unrelated topics."
+What side effect often occurs when modifying neurons to 'steer' a model?,The model may begin to hallucinate or provide non-factual information.
+How does a 'Transcoder' differ from a standard Sparse Autoencoder?,It incorporates context from previous layers or across layers rather than looking at a single layer's activations in isolation.
+What is the purpose of the 'Jump ReLU' activation function in Sparse Autoencoders?,It is a modified ReLU function specifically designed to enforce higher levels of sparsity.
+Name an open-source library used for training and analyzing Sparse Autoencoders on different models.,SAE Lens (or Transformer Lens).
+What does a 'High Fidelity' reconstruction in an SAE indicate?,The sparse representation successfully captured nearly all the information from the original activation vector.
+What is the function of the 'Agent Protocol' mentioned by Henry?,It standardizes the interaction and communication between different agents and user interfaces.
+"In the context of the agent evaluation lab, what does 'Ground Truth' data represent?",The expected or 'correct' responses used to measure the accuracy and performance of the agent.
+Why is 'MLflow' mentioned as a useful tool for agent development?,It provides open-source observability and evaluation techniques for tracking agent experiments.
+What are 'Model-Based Graders' in the Vertex AI evaluation service?,Secondary LLMs that act as 'judges' to score the reasoning and output quality of a primary agent.
+How can interpretability features potentially be used to prevent 'unsafe code' generation?,By monitoring for the activation of 'unsafe code' neurons and halting generation if they appear.
+What is the goal of the 'Agent UI' project described in the presentation?,To create a standardized protocol (Agentic UI) for displaying real-time agent interactions and multi-agent collaboration.
+"In David's interpretability demo, what happened when the 'energy/physics' neuron was magnified in the Gemma model?","The model's responses were steered toward physics concepts, even when asked for a simple fun fact."
+What does the term 'trajectory' refer to in agent evaluation?,The sequence of reasoning steps and tool calls an agent takes to arrive at a final answer.
+"According to the source, why is the 'asynchronous nature' of agents a challenge for user interfaces?",The UI must stay responsive and informative while agents work on tasks in the background without a set deadline.
+What is the 'Agent SDK' (ADK)?,An open-source framework used to create and manage the lifecycle of AI agents.
+What is the significance of '98% fidelity' in the SAE reconstruction example?,It shows the sparse features are highly representative of the model's actual internal state.
+Why is 'L1 Regularization' preferred over other types for enforcing sparsity in SAEs?,It tends to push coefficients exactly to zero rather than just making them very small.
+What does David mean by being an 'LLM Psychiatrist'?,Using interpretability tools to look 'under the hood' and understand the model's internal concepts and 'thoughts'.
+What is a 'Crock' point in model training?,The specific moment during training when 'Grokking' occurs and the model's performance suddenly improves via generalization.
+How can mechanical interpretability improve 'Trustworthy AI'?,"By making 'black box' models transparent, allowing researchers to verify if a model is reasoning correctly or lying."
+What is 'Neuropedia' in the context of LLM interpretability?,A website for exploring and visualizing the features identified by Sparse Autoencoders in models like Gemma.
+"In the agent evaluation lab, what does the 'metric threshold' define?",The minimum acceptable score an agent must achieve on an evaluation metric to be promoted to production.
+Name the specialized agent in the multi-agent system responsible for verifying the quality of content.,The Judge Agent.
+What is the 'Research Agent' responsible for in the course-building multi-agent system?,Gathering necessary information and technical foundations based on a provided topic.
+How does the 'Agentic Application' build process handle latency in multimodal data processing?,By utilizing asynchronous frameworks and real-time status streaming to the user.
+What is 'Agent to Agent' (A2A) communication in a MAS?,The standardized protocol allowing different specialized agents to collaborate and share information directly.
+What is the relationship between 'probabilistic systems' and 'hallucinations'?,"The probabilistic nature of LLMs means they can generate incorrect but plausible-sounding info, leading to hallucinations."
+How can 'Code-Based Deterministic Metrics' be used to rate agent performance?,By comparing agent outputs to ground truth using fixed mathematical formulas like Accuracy or $R^2$.
+"In interpretation, what does it mean to 'reverse engineer the source code' of a model?",Analyzing the numerical weights and matrices to find the underlying logical algorithms they represent.
+What role does 'Cloud Run' play in Henry's CI/CD evaluation workflow?,It serves as the hosting platform where agent revisions are staged for automated metric testing.
+What is the 'Final Response Match' metric in agent evaluation?,A check to see if the agent's final output aligns with the expected result in the evaluation dataset.

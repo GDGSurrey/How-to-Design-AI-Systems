@@ -1,0 +1,55 @@
+"In AI system design, how does 'Intelligence in Production' differ from 'Intelligence in a Notebook' regarding data and traffic?","Production data is messy and traffic is unpredictable, whereas notebook environments use clean datasets and static conditions."
+What are the two fundamental architecture patterns for designing AI systems?,Pipeline-based AI systems and Agentic-based AI systems.
+What is the primary characteristic of the flow in a traditional pipeline-based AI system?,"The flow is predefined, linear, and fixed by the system's code."
+What is a major limitation of traditional AI pipelines regarding decision-making?,"They do not make autonomous decisions, plan, or use tools independently."
+How does an Agentic AI system interact with its environment differently than a pipeline system?,It works in dynamic loops using reasoning and planning rather than a fixed linear path.
+What are the five core objectives of designing production-ready AI systems?,"Accuracy, Scalability, Latency, Adaptability, and Observability."
+"In AI architecture, which layer handles data collection, storage, and preprocessing?",The Data Layer.
+What is the primary function of the Serving Layer in an AI system?,Hosting models and providing real-time APIs for predictions.
+Which component in an ML pipeline solves the 'offline-online consistency problem' for features?,The Feature Store.
+What is the purpose of a Model Registry?,To track every version of a model and its metadata for easy rollbacks.
+Concept: Monitoring and Feedback in AI,"The process of tracking performance, detecting data drift, and using feedback loops to improve the model over time."
+How does RAG (Retrieval-Augmented Generation) improve LLM responses?,"It retrieves real-time or private documents to provide the LLM with factual, up-to-date context."
+What does it mean for an Agent Development Kit (ADK) to be 'model agnostic'?,"It allows developers to plug in different generative models (e.g., Gemini, OpenAI) without redesigning the agent logic."
+What defines an AI 'Agent' in the context of application development?,A system that uses an LLM to decide the control flow of the application.
+What three elements define the 'control flow' of an application?,"Execution, Strategy, and Action Space."
+The Agency Spectrum ranges from Level 1 to Level 6; what characterizes Level 1?,Hard-coded logic where the program code determines every step without AI decision-making.
+"In the Agency Spectrum, where does a standard RAG system with a single LLM call reside?",Level 2.
+What is Level 6 on the Agency Spectrum?,Fully autonomous agents capable of building their own tools to solve problems.
+What are the three main steps in a RAG system?,"Ingestion, Retrieval, and Response Synthesis."
+What is 'Tool Binding' in agentic systems?,The process of informing the LLM about which external tools are available for use.
+What is 'Tool Calling' in agentic systems?,The action where the LLM decides to use a specific tool to perform a task.
+The standard unit of an agent is often the _____ architecture.,React (Reason and Act)
+"In the React architecture, what does the 'Reason' step involve?",The LLM planning how to navigate the use of tools to solve a user query.
+What is a potential downside of long-term memory in agents?,The model may over-rely on outdated information that is no longer relevant to the current context.
+"In multi-agent systems, how does a 'Network' architecture function?",It is a decentralized system where every node can talk to every other node to solve creative problems.
+What is a major risk of a 'Network' multi-agent architecture?,High loop potential and increased API costs due to decentralized communication.
+"In a 'Hierarchical' multi-agent architecture, what is the role of the 'Supervisor' node?","It oversees worker nodes, distributes tasks, and ensures system stability."
+Which multi-agent architecture is compared to a standard corporate organization?,Hierarchical or Supervisor-based architecture.
+What is the 'Flat Latency' problem in LLMs?,LLMs spend the same amount of energy/tokens on simple questions as they do on complex ones.
+What is the fundamental cause of 'Hallucinations' in LLMs?,"The reward mechanism for predicting the next word, which encourages guessing over admitting ignorance."
+Why is it recommended to use 'specialized' LLMs in worker nodes rather than one massive model for everything?,It optimizes performance by matching specific skills (like coding) to the task while reducing overall costs.
+"In a multi-agent data science team, what is the specific role of a 'Judge' agent?",Reviewing the work of other agents to assess if it passes or fails based on specific criteria.
+What is the function of an 'Orchestration' agent?,Managing the workflow and communication between specialized agents in a system.
+"In an agentic loop, what does an 'Escalation Checker' or 'Stop Logic' do?",Identifies when a task is successfully completed to exit the loop and return the final answer.
+What is one way to prevent agents from 'sweet talking' (endless polite loops) in production?,"Implementing strict tokens (e.g., 'FINAL ANSWER') that signal the end of the conversation."
+Why is RAG considered a form of 'In-context learning'?,It provides the model with specific information within the prompt rather than retraining the model's parameters.
+What is 'Prompt Engineering' in the evolution of AI?,The transition from simple text generation to using specific instructions/structures to get better answers.
+What characterizes the 'Agentic RAG' or 'State Machine' level (Level 4)?,The system can loop through retrieval and reasoning steps multiple times but within a restricted set of options.
+What does 'Observability' entail in AI system design?,"The ability to monitor, audit, and track metrics like data drift and model bias."
+How does the 'Adaptability' objective apply to AI models?,The system's ability to learn from new data via feedback loops or online learning mechanisms.
+Which specific tool is commonly used for search engine capabilities in agentic systems?,Tavily Search
+"In a hierarchical agent design, where should the most powerful/expensive LLM be placed?",On the top 'supervisor' node that manages the distribution of tasks.
+What is 'Decay in Memory' in an agentic system?,A mechanism where older information is weighted less or forgotten to maintain relevance to the current task.
+How does the 'Action Space' affect the autonomy of an agent?,It defines the range of possible steps and tools an agent can choose from to complete a task.
+"In the context of the speaker's demo, what was the primary role of the 'Researcher' agent?",Finding comprehensive and accurate information on a user's topic using search tools.
+What is the function of the 'Content Builder' agent in the provided system design?,Structuring and writing the final information or course content once research is validated.
+Why is 'Task Isolation' important when designing multi-agent systems?,"It allows for easier debugging and prevents agents from performing tasks they aren't optimized for (e.g., a researcher trying to code)."
+True or False: LLMs are rewarded for being 'honest' and saying they don't know an answer.,False; they are traditionally rewarded for predicting the next likely word.
+What is 'Deployment Agnostic' in agent development?,"The ability to run agents on any platform, whether it is local, cloud-based, or on-premises."
+How does 'Execution' relate to the control flow of an AI application?,It refers to how the final output of each individual step in the algorithm is produced.
+Which stage of AI evolution introduced the ability for AI to 'do things' (actions) rather than just talk?,The Agentic stage (LLM + Retrieval + Actions).
+What is the benefit of RAG regarding data privacy?,It allows companies to use private data for context without exposing it to the model for training.
+What does a 'Linear' flow imply in a without-agent system?,Each step from data injection to prediction is hard-coded and follows a set sequence.
+"In the multi-agent demo, why was Gemini Flash used for the programmer agent?",Because it is highly optimized for coding tasks and cost-effective compared to larger models.
+How is 'Strategy' defined in the context of an agent's control flow?,The method of navigating from one part of the algorithm or step to the next.
