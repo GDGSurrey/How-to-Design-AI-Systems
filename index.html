@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Systems & Agentic Orchestration - GDG Surrey</title>
     
-    <!-- External Scripts & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -80,7 +79,6 @@
         <div class="orb orb-2"></div>
     </div>
 
-    <!-- MAIN NAV -->
     <header class="border-b border-gray-100 sticky top-0 bg-white z-[100] shadow-sm transition-colors duration-500" id="main-header">
         <div class="container mx-auto px-6 py-3 flex flex-col md:flex-row items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -99,7 +97,6 @@
         </div>
     </header>
 
-    <!-- SECTION: HOME PAGE (ABOUT) -->
     <main id="home-view" class="block">
         <div class="w-full bg-black overflow-hidden border-b border-gray-800">
             <img src="https://drive.google.com/thumbnail?id=1YNFHpxE0GxViNfcsAEU6J4Wu1437FmiM&sz=w1600" alt="Banner" class="w-full h-auto max-h-[400px] object-contain bg-black" />
@@ -125,7 +122,6 @@
             </div>
         </section>
 
-        <!-- Stats and RSVPs -->
         <section class="container mx-auto px-6 py-12 mb-12">
             <div class="text-center mb-10">
                 <div class="inline-block bg-white px-8 py-3 rounded-full shadow-md border border-gray-100">
@@ -153,7 +149,6 @@ View Day 2 Recording</a>
             </div>
         </section>
 
-        <!-- Expert Panel -->
         <section class="bg-gray-50 py-20">
             <div class="container mx-auto px-6">
                 <h2 class="text-3xl font-bold text-center mb-16">Expert Panel</h2>
@@ -191,7 +186,6 @@ View Day 2 Recording</a>
         </section>
     </main>
 
-    <!-- SECTION: FLASHCARDS -->
     <main id="flash-view" class="hidden min-h-[90vh] flex items-center justify-center py-10">
         <div class="w-full max-w-2xl px-6">
             <div class="flex justify-center gap-4 mb-8">
@@ -241,7 +235,6 @@ View Day 2 Recording</a>
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="bg-gray-900 text-white py-16 transition-colors duration-500" id="main-footer">
         <div class="container mx-auto px-6 text-center">
             <h4 class="text-2xl font-bold mb-8">Connect with us</h4>
@@ -265,7 +258,7 @@ View Day 2 Recording</a>
     let currentSet = [];
     let dataLoaded = false;
 
-    // ✅ FETCH CSV FILES FROM GITHUB RAW
+    // ✅ FIXED: Using header: false to prevent "undefined" values and capture all cards
     async function parseInitialData() {
         try {
             const day1Url = "https://raw.githubusercontent.com/GDGSurrey/How-to-Design-AI-Systems/main/day1.csv";
@@ -279,23 +272,29 @@ View Day 2 Recording</a>
             const day1Text = await day1Response.text();
             const day2Text = await day2Response.text();
 
+            // Set header to false because CSVs start immediately with data
             day1Cards = Papa.parse(day1Text, {
-                header: true,
+                header: false,
                 skipEmptyLines: true
             }).data.map(r => ({
-                q: r.Question?.trim(),
-                a: r.Answer?.trim()
+                q: r[0]?.trim(), // Index 0 is the Question
+                a: r[1]?.trim()  // Index 1 is the Answer
             }));
 
             day2Cards = Papa.parse(day2Text, {
-                header: true,
+                header: false,
                 skipEmptyLines: true
             }).data.map(r => ({
-                q: r.Question?.trim(),
-                a: r.Answer?.trim()
+                q: r[0]?.trim(),
+                a: r[1]?.trim()
             }));
 
             dataLoaded = true;
+            
+            // Auto-load if the view is already switched
+            if (document.getElementById('flash-view').classList.contains('flex')) {
+                loadSet(currentDay);
+            }
 
         } catch (error) {
             console.error("Error loading CSV files:", error);
